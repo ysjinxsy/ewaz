@@ -127,10 +127,13 @@ class TicketDropdown(ui.Select):
 
         # Format the ticket number with leading zeros (e.g., 0001)
         formatted_ticket_number = f'{new_ticket_number:04}'
-
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            interaction.user: discord.PermissionOverwrite(view_channel=True)
+        }
         # Create the text channel
         channel_name = f'ticket-{formatted_ticket_number}'
-        channel = await interaction.guild.create_text_channel(channel_name)
+        channel = await interaction.guild.create_text_channel(channel_name, overwrites=overwrites)
 
         # Insert the new ticket number into the database
         await cursor.execute('INSERT INTO tickets (ticket_number) VALUES (?)', (new_ticket_number,))
